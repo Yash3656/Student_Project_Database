@@ -109,7 +109,7 @@ public class sql_pro {
 
 	private void display_max_des() throws SQLException {
 		//Display the student who played the max designation(e.g. manager,programmer) in the same project.
-		String s1 = "select * from Student where st_no in(select st_no from StudentProject group by prj_no having count(designation))>1";
+		String s1 = "select * from Student where st_no in(select st_no from StudentProject group by prj_no having max(designation))";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
