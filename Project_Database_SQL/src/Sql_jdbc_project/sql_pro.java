@@ -17,8 +17,15 @@ public class sql_pro {
 		do {
 			System.out.println("1.Display list of all student \n 2.	Display list of all projects."
 					+ " \n 3.Display the number of students who are working on project “P01”."
-					+ "\n 4.Display number of students who participated in more than one project");
+					+ "\n 4.Display number of students who participated in more than one project"
+					+ "5.	Find number of students who did not participate in any project.\r\n"
+					+ "6.	Display the information (no,name,age) of student  who made the project in java.\r\n"
+					+ "7.	Display the student information who is a programmer.\r\n"
+					+ "8.	Display the student who played the max designation(e.g. manager,programmer) in the same project.\r\n"
+					+ "9.	Display details of the youngest student.\r\n"
+					+ "10.	Display the info of the student who participated in the project where total no of the student should be exact three.\r\n");
 			System.out.println("Enter ur Choice: --");
+			@SuppressWarnings("resource")
 			Scanner sc = new Scanner(System.in);
 			int ch = sc.nextInt();
 			switch(ch)
@@ -75,8 +82,7 @@ public class sql_pro {
 
 	private void display_info3() throws SQLException {
 		//Display the info of the student who participated in the project where total no of the student should be exact three.
-		String s1 = "select * from Student,StudentProject where Student.st_no = StudentProject.st_no group by StudentProject.prj_no having count(StudentProject.st_no)=3 ";
-				//+ "st_no in(select prj_no from StudentProject group by prj_no having count(st_no)=3)\";
+		String s1 = "select * from Student,StudentProject  where Student.st_no = StudentProject.st_no group by StudentProject.prj_no having count(StudentProject.st_no)=3";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs1 = st1.executeQuery(s1);
@@ -103,7 +109,7 @@ public class sql_pro {
 
 	private void display_max_des() throws SQLException {
 		//Display the student who played the max designation(e.g. manager,programmer) in the same project.
-		String s1 = "select st_no,st_name,st_dob,st_doj from Student where st_no in(select st_no from StudentProject where designation='PROGRAMMER')";
+		String s1 = "select * from Student where st_no in(select st_no from StudentProject group by prj_no having count(designation))>1";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
