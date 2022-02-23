@@ -82,7 +82,17 @@ public class sql_pro {
 
 	private void display_info3() throws SQLException {
 		//Display the info of the student who participated in the project where total no of the student should be exact three.
-		String s1 = "select * from Student,StudentProject  where Student.st_no = StudentProject.st_no group by StudentProject.prj_no having count(StudentProject.st_no)=3";
+		String s1 = "select * from student where st_no in(SELECT st_no from\r\n"
+				+ "\r\n"
+				+ "     (\r\n"
+				+ "\r\n"
+				+ "     SELECT COUNT(st_no),prj_no from StudentProject group by prj_no\r\n"
+				+ "\r\n"
+				+ "     HAVING COUNT(st_no) = 3\r\n"
+				+ "\r\n"
+				+ "     ) a,StudentProject b where a.prj_no = b.prj_no);\r\n"
+				+ "\r\n"
+				+ " ";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs1 = st1.executeQuery(s1);
@@ -109,14 +119,20 @@ public class sql_pro {
 
 	private void display_max_des() throws SQLException {
 		//Display the student who played the max designation(e.g. manager,programmer) in the same project.
-		String s1 = "select * from Student where st_no in(select st_no from StudentProject group by prj_no having max(designation))";
+		String s1 = "select st_no,COUNT(designation) from studentproject group by st_no,prj_no\r\n"
+				+ "\r\n"
+				+ "     HAVING COUNT(designation) =\r\n"
+				+ "\r\n"
+				+ "     (SELECT MAX(st_no) FROM\r\n"
+				+ "\r\n"
+				+ "     (select COUNT(designation) st_no from studentproject group by st_no,prj_no));";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
 		int i=1;
 		while(rs1.next())
 		{
-				System.out.println(rs1.getString(i) +"\t"+ rs1.getString(i+1) + "\t" +rs1.getString(i+2) + "\t" + rs1.getString(i+3));
+				System.out.println(rs1.getString(i) +"\t"+ rs1.getString(i+1) );//+ "\t" +rs1.getString(i+2) + "\t" + rs1.getString(i+3));
 		}
 		
 	}
