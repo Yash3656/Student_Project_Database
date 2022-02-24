@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class sql_pro {
+	
 	String url = "jdbc:mysql://localhost/Student_Relatinal_project_database";
 	String user = "root";
 	String password ="Yash@123";
@@ -82,17 +83,10 @@ public class sql_pro {
 
 	private void display_info3() throws SQLException {
 		//Display the info of the student who participated in the project where total no of the student should be exact three.
-		String s1 = "select * from student where st_no in(SELECT st_no from\r\n"
-				+ "\r\n"
-				+ "     (\r\n"
-				+ "\r\n"
-				+ "     SELECT COUNT(st_no),prj_no from StudentProject group by prj_no\r\n"
-				+ "\r\n"
-				+ "     HAVING COUNT(st_no) = 3\r\n"
-				+ "\r\n"
-				+ "     ) a,StudentProject b where a.prj_no = b.prj_no);\r\n"
-				+ "\r\n"
-				+ " ";
+		String s1 = "select * from student where st_no in"
+				+ "(select st_no from studentproject where prj_no in"
+				+ "(select prj_no from studentproject group by prj_no having count(distinct(st_no))=3"
+				+ "))";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs1 = st1.executeQuery(s1);
@@ -119,13 +113,13 @@ public class sql_pro {
 
 	private void display_max_des() throws SQLException {
 		//Display the student who played the max designation(e.g. manager,programmer) in the same project.
-		String s1 = "select st_no,COUNT(designation) from studentproject group by st_no,prj_no\r\n"
+		String s1 = "select st_no,prj_no ,count(designation) from studentproject group by st_no\r\n"
 				+ "\r\n"
-				+ "     HAVING COUNT(designation) =\r\n"
+				+ "     HAVING COUNT(distinct (designation)) =\r\n"
 				+ "\r\n"
-				+ "     (SELECT MAX(st_no) FROM\r\n"
+				+ "     (SELECT MAX(temp1) FROM\r\n"
 				+ "\r\n"
-				+ "     (select COUNT(designation) st_no from studentproject group by st_no,prj_no));";
+				+ "     (select COUNT(designation) as temp1 from studentproject  group by st_no,prj_no));";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
