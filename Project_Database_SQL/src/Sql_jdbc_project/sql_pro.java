@@ -122,10 +122,32 @@ public class sql_pro {
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
 		HashMap <String,Integer> l = new HashMap <String,Integer>();
-		int i=1;
+		int flag=1;
+		String a = null;
+		int b = 0;
 		while(rs1.next())
 		{
-				l.put(rs1.getString(i), rs1.getInt(i+1));
+			if(flag==1)
+			{
+				 a= rs1.getString(1);
+				 b = rs1.getInt(2);
+				 l.put(a, b);
+				flag=0;
+			}
+			else if(a.equalsIgnoreCase(rs1.getString(1)) && flag==0)
+			{
+				if(b<rs1.getInt(2))
+				{
+					b=rs1.getInt(2);
+					l.replace(a, b);
+				}
+				flag=1;
+				
+			}
+			else
+			{
+				l.put(rs1.getString(1),rs1.getInt(2));
+			}
 				
 		}
 		int maxValueInMap=(Collections.max(l.values()));  
