@@ -1,10 +1,14 @@
 package Sql_jdbc_project;
 
+import java.security.KeyStore.Entry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class sql_pro {
@@ -113,21 +117,24 @@ public class sql_pro {
 
 	private void display_max_des() throws SQLException {
 		//Display the student who played the max designation(e.g. manager,programmer) in the same project.
-		String s1 = "select st_no,prj_no ,count(designation) from studentproject group by st_no\r\n"
-				+ "\r\n"
-				+ "     HAVING COUNT(distinct (designation)) =\r\n"
-				+ "\r\n"
-				+ "     (SELECT MAX(temp1) FROM\r\n"
-				+ "\r\n"
-				+ "     (select COUNT(designation) as temp1 from studentproject  group by st_no,prj_no));";
+		String s1 = "select st_no,count(distinct (designation)) from studentproject group by st_no,prj_no;";
 		Connection conn = DriverManager.getConnection(url,user,password);
 		Statement st1 = conn.createStatement();
 		ResultSet rs1 = st1.executeQuery(s1);
+		HashMap <String,Integer> l = new HashMap <String,Integer>();
 		int i=1;
 		while(rs1.next())
 		{
-				System.out.println(rs1.getString(i) +"\t"+ rs1.getString(i+1) );//+ "\t" +rs1.getString(i+2) + "\t" + rs1.getString(i+3));
+				l.put(rs1.getString(i), rs1.getInt(i+1));
+				
 		}
+		int maxValueInMap=(Collections.max(l.values()));  
+        for (java.util.Map.Entry<String, Integer> entry : l.entrySet()) {  
+            if (entry.getValue()==maxValueInMap) {
+                System.out.println(entry.getKey() + "\t" +entry.getValue());
+              
+            }
+        }
 		
 	}
 
